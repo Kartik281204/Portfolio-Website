@@ -134,8 +134,20 @@
     letter-spacing: 0.02em;
     text-decoration: none;
     color: #F1E9CE;
+    position: relative;
+    padding-bottom: 2px;
     transition: color 0.15s ease;
   }
+  #topbar nav a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 100%;
+    bottom: -3px;
+    height: 2px;
+    background: var(--yellow);
+    transition: right 0.2s ease;
+  }
+  #topbar nav a:hover::after, #topbar nav a.active::after { right: 0; }
   #topbar nav a:hover { color: var(--yellow); }
 
   @media (max-width: 480px) {
@@ -216,10 +228,18 @@
     height: 42px;
     background: var(--red);
     clip-path: polygon(50% 0%,61% 20%,82% 10%,78% 32%,100% 35%,84% 50%,100% 65%,78% 68%,82% 90%,61% 80%,50% 100%,39% 80%,18% 90%,22% 68%,0% 65%,16% 50%,0% 35%,22% 32%,18% 10%,39% 20%);
+    transform: scale(0) rotate(-25deg);
+    animation: burstPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: 0.55s;
   }
-  .stat:nth-child(2)::before { background: var(--blue); }
-  .stat:nth-child(3)::before { background: var(--yellow); }
-  .stat:nth-child(4)::before { background: var(--red); }
+  @keyframes burstPop {
+    0% { transform: scale(0) rotate(-25deg); }
+    65% { transform: scale(1.2) rotate(8deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  .stat:nth-child(2)::before { background: var(--blue); animation-delay: 0.68s; }
+  .stat:nth-child(3)::before { background: var(--yellow); animation-delay: 0.81s; }
+  .stat:nth-child(4)::before { background: var(--red); animation-delay: 0.94s; }
   .stat .num {
     font-family: var(--display);
     font-weight: 400;
@@ -259,6 +279,7 @@
     display: block;
   }
   section h2 {
+    --rot: -1deg;
     font-family: var(--display);
     font-weight: 400;
     font-size: clamp(28px, 4.6vw, 38px);
@@ -271,9 +292,12 @@
     border: 3px solid var(--panel-border);
     padding: 6px 18px 10px;
     box-shadow: 5px 5px 0 var(--panel-shadow);
-    transform: rotate(-1deg);
+    transform: rotate(0deg) scale(0.85);
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  section:nth-of-type(even) h2 { background: var(--accent); transform: rotate(1deg); }
+  section h2.is-visible { opacity: 1; transform: rotate(var(--rot)) scale(1); }
+  section:nth-of-type(even) h2 { background: var(--accent); --rot: 1deg; }
 
   /* ---- focus columns ---- */
   .focus-grid {
@@ -282,16 +306,23 @@
     gap: 30px;
   }
   .focus-item {
+    --rot: 0deg;
     background: var(--panel-bg);
     border: 3px solid var(--panel-border);
     box-shadow: 6px 6px 0 var(--panel-shadow);
     border-radius: 2px;
     padding: 18px 18px 20px;
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: translateY(26px) scale(0.96) rotate(0deg);
+  }
+  .focus-item.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(var(--rot));
   }
   .focus-item:hover { box-shadow: 9px 9px 0 var(--panel-shadow); }
-  .focus-item:nth-child(1) { transform: rotate(-0.6deg); }
-  .focus-item:nth-child(3) { transform: rotate(0.6deg); }
+  .focus-item:nth-child(1) { --rot: -0.6deg; }
+  .focus-item:nth-child(3) { --rot: 0.6deg; }
   .focus-item h3 {
     font-family: var(--display);
     font-size: 22px;
@@ -312,6 +343,7 @@
 
   /* ---- experience ---- */
   .entry {
+    --rot: 0deg;
     display: grid;
     grid-template-columns: 128px 1fr;
     gap: 20px;
@@ -321,11 +353,17 @@
     border: 3px solid var(--panel-border);
     box-shadow: 7px 7px 0 var(--panel-shadow);
     border-radius: 2px;
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: translateY(26px) scale(0.97) rotate(0deg);
+  }
+  .entry.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(var(--rot));
   }
   .entry:hover { box-shadow: 10px 10px 0 var(--panel-shadow); }
-  .entry:nth-child(3n+2) { transform: rotate(-0.35deg); }
-  .entry:nth-child(3n+3) { transform: rotate(0.35deg); }
+  .entry:nth-child(3n+2) { --rot: -0.35deg; }
+  .entry:nth-child(3n+3) { --rot: 0.35deg; }
   .entry .when {
     font-family: var(--mono);
     font-size: 12px;
@@ -356,17 +394,24 @@
 
   /* ---- projects ---- */
   .proj {
+    --rot: 0deg;
     padding: 22px 24px;
     margin-bottom: 26px;
     background: var(--panel-bg);
     border: 3px solid var(--panel-border);
     box-shadow: 7px 7px 0 var(--panel-shadow);
     border-radius: 2px;
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: translateY(26px) scale(0.97) rotate(0deg);
+  }
+  .proj.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(var(--rot));
   }
   .proj:hover { box-shadow: 10px 10px 0 var(--panel-shadow); }
-  .proj:nth-child(3n+2) { transform: rotate(0.35deg); }
-  .proj:nth-child(3n+3) { transform: rotate(-0.35deg); }
+  .proj:nth-child(3n+2) { --rot: 0.35deg; }
+  .proj:nth-child(3n+3) { --rot: -0.35deg; }
   .proj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
   .proj-head h3 { font-family: var(--display); font-weight: 400; letter-spacing: 0.02em; font-size: 22px; text-transform: uppercase; }
   .proj-head a.gh {
@@ -417,8 +462,11 @@
     border: 3px solid var(--panel-border);
     box-shadow: 6px 6px 0 var(--panel-shadow);
     border-radius: 2px;
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
   }
+  .edu-block.is-visible { opacity: 1; transform: translateY(0) scale(1); }
   .edu-block:hover { box-shadow: 9px 9px 0 var(--panel-shadow); }
   .edu-block .who { font-family: var(--display); font-weight: 400; letter-spacing: 0.02em; font-size: 20px; text-transform: uppercase; }
   .edu-block .when { font-family: var(--mono); font-size: 12px; color: var(--fg-muted); margin-top: 2px; }
@@ -434,8 +482,11 @@
     box-shadow: 3px 3px 0 var(--panel-shadow);
     border-radius: 2px;
     position: relative;
-    transition: box-shadow 0.15s ease;
+    transition: box-shadow 0.15s ease, opacity 0.45s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity: 0;
+    transform: translateX(-14px);
   }
+  .lead-list li.is-visible { opacity: 1; transform: translateX(0); }
   .lead-list li:hover { box-shadow: 5px 5px 0 var(--panel-shadow); }
   .lead-list li::before {
     content: "\2605";
@@ -476,6 +527,7 @@
     transition: transform 0.1s ease, box-shadow 0.1s ease;
   }
   #dl-btn:hover { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--panel-shadow); }
+  #dl-btn:active { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--panel-shadow); }
   #dl-status { font-size: 12.5px; color: var(--fg-muted); margin-top: 10px; min-height: 16px; }
 
   .fine { font-family: var(--hand); font-size: 14px; color: var(--fg-muted); margin-top: 40px; }
@@ -498,11 +550,12 @@
     text-decoration: none;
     border-radius: 20px;
     display: inline-block;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
   }
   .skill-group .tag { font-family: var(--sans); font-weight: 600; font-size: 12.5px; }
   .proj-stack .tag { font-family: var(--mono); font-size: 11.5px; border-radius: 4px; padding: 1px 7px; margin: 0 2px; }
   button.tag:hover { color: #fff; background: var(--accent-2); border-color: var(--panel-border); }
+  button.tag:active { transform: scale(0.94); }
   button.tag.is-active { color: #fff; background: var(--accent); border-color: var(--panel-border); font-weight: 700; }
 
   .entry, .proj {
@@ -560,6 +613,13 @@
   }
   .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
 </style>
+<noscript>
+<style>
+  .entry, .proj, .focus-item, .edu-block, .lead-list li, section h2 { opacity: 1 !important; transform: none !important; }
+  header.hero { opacity: 1 !important; transform: none !important; }
+  .stat::before { animation: none !important; transform: scale(1) rotate(0deg) !important; }
+</style>
+</noscript>
 </head>
 <body>
 
@@ -908,6 +968,27 @@
 </div>
 
 <script>
+
+  // scroll-triggered comic panel entrances (skipped entirely if the viewer prefers reduced motion)
+  (function () {
+    var targets = Array.prototype.slice.call(document.querySelectorAll(
+      '.entry, .proj, .focus-item, .edu-block, .lead-list li, section h2'
+    ));
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      targets.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    targets.forEach(function (el) { observer.observe(el); });
+  })();
 
   // scroll-spy: highlight the nav link for the section in view
   (function () {
